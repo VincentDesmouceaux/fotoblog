@@ -1,0 +1,79 @@
+html {
+    font-family: Arial, sans-serif;
+}
+
+/* The sidebar menu */
+.sidebar {
+    height: 100vh; /* Full height to ensure it fills the entire height of the screen */
+    width: 220px; /* Width of the sidebar */
+    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #1d3030; /* Dark green background */
+    color: #ffffe6; /* Light text color */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Navigation menu links */
+.sidebar a {
+    text-decoration: none;
+    color: #ffffe6; /* Same color as sidebar text */
+    display: block;
+    margin-bottom: 10px; /* Space between links */
+}
+
+/* Change color when hovering over a link */
+.sidebar a:hover {
+    color: #f1f1f1;
+}
+
+/* Style for main page content */
+.main {
+    margin-left: 240px; /* Same as the width of the sidebar */
+    padding: 20px;
+    min-height: 100vh; /* Ensure full height */
+    background-color: #f4f4f4; /* Light background for the main content */
+    box-sizing: border-box;
+}
+
+/* Style for user information and logout button */
+.user-info {
+    margin-bottom: 20px; /* Space below user info */
+    background-color: #e6e6e6; /* Light grey background for contrast */
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Style for avatar (optional) */
+.profile-photo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+}
+/* Grid for posts */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 20px; /* Space between grid items */
+    padding: 20px;
+    text-align: center;
+}
+
+/* Style for post images */
+.post img {
+    width: 100%; /* Full width */
+    max-width: 400px; /* Max width for larger screens */
+    border-radius: 5px;
+}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Profil de {{ user.username }}</h2>
+    {% if user.profile_photo %}
+        <img src="{{ user.profile_photo.url }}" alt="Photo de profil">
+    {% else %}
+        <img src="{% static 'images/default_profile.png' %}" alt="Photo de profil par défaut">
+    {% endif %}
+    <a href="{% url 'upload_profile_photo' %}">Changer la photo de profil</a>
+{% endblock content %}

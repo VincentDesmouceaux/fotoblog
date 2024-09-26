@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Modifier le billet</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <!-- Le champ caché pour edit_blog -->
+      
+        <button type="submit" name="edit_blog">Sauvegarder</button>
+    </form>
+    <hr>
+    <h3>Supprimer le billet ?</h3>
+    <form method="post">
+        {{ delete_form }}
+        {% csrf_token %}
+        <button type="submit" name="delete_blog">Supprimer</button>
+    </form>
+{% endblock content %}
