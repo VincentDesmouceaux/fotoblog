@@ -1,15 +1,16 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
+# Assurez-vous que cela fait référence à votre modèle User personnalisé
+from .models import User
 
 
 class SignupForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = get_user_model()
-        fields = ('username', 'email', 'first_name', 'last_name', 'role')
+    class Meta:
+        model = User  # Utilisez votre modèle User personnalisé
+        fields = ['username', 'email', 'first_name', 'last_name', 'role']
 
 
 class UploadProfilePhotoForm(forms.ModelForm):
     class Meta:
-        model = get_user_model()
+        model = User()
         fields = ['profile_photo']

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
-from blog.views import HomePageView, BlogAndPhotoUploadView, BlogDetailView, BlogUpdateView, BlogDeleteView, CreateMultiplePhotosView
+from blog.views import HomePageView, BlogAndPhotoUploadView, BlogDetailView, BlogUpdateView, BlogDeleteView, CreateMultiplePhotosView, FollowUsersView
 from authentication.views import SignupView, UploadProfilePhotoView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -26,6 +26,7 @@ urlpatterns = [
          BlogDeleteView.as_view(), name='delete_blog'),
     path('photo/upload-multiple/', CreateMultiplePhotosView.as_view(),
          name='create_multiple_photos'),  # Nouvelle URL
+    path('follow-users/', FollowUsersView.as_view(), name='follow_users'),
 ]
 
 if settings.DEBUG:

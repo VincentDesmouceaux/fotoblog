@@ -1,5 +1,28 @@
 from django import forms
 from . import models
+from .models import Blog, Photo
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class FollowUsersForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['follows']
+
+
+class BlogForm(forms.ModelForm):
+    contributors = forms.ModelMultipleChoiceField(
+        queryset=User.objects.filter(role='CREATOR'),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    class Meta:
+        model = Blog
+        fields = ['title', 'content', 'contributors']
 
 
 class BlogForm(forms.ModelForm):
