@@ -23,6 +23,8 @@
                 <a href="{% url 'blog_create' %}">Écrire un billet</a>
                 <a href="{% url 'blog_create' %}">Télécharger une photo</a>
                 <a href="{% url 'create_multiple_photos' %}">Télécharger plusieurs photos</a>
+                <a href="{% url 'photo_feed' %}">Voir le flux photo</a>
+
             {% endif %}
 
             {% if request.user.is_authenticated %}

@@ -1,16 +1,34 @@
+from django.db.models import Q, Value, CharField
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import TemplateView, DetailView, UpdateView, DeleteView
+from django.views.generic import TemplateView, DetailView, UpdateView, DeleteView, ListView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.forms import formset_factory
+from itertools import chain
+from operator import attrgetter
 from . import forms
 from . import models
-from PIL import Image
 from django.contrib.auth import get_user_model
-from .forms import FollowUsersForm  # Assurez-vous que cet import est présent
-
-
+from .forms import FollowUsersForm
+from .models import Photo
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 User = get_user_model()
+
+
+class PhotoFeedView(LoginRequiredMixin, ListView):
+    model = models.Photo
+    template_name = 'blog/photo_feed.html'
+    context_object_name = 'photos'
+    login_url = '/login/'
+    redirect_field_name = 'redirect_to'
+    paginate_by = 4  # Nombre de photos par page
+
+    def get_queryset(self):
+        # Récupérer les photos dont le téléverseur est suivi par l'utilisateur connecté, ou les photos de l'utilisateur lui-même
+        return models.Photo.objects.filter(
+            Q(uploader__in=self.request.user.follows.all()) | Q(
+                uploader=self.request.user)
+        ).order_by('-created_at')
 
 
 class FollowUsersView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -21,30 +39,66 @@ class FollowUsersView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     redirect_field_name = 'redirect_to'
 
     def test_func(self):
-        # Seuls les utilisateurs ayant le rôle 'SUBSCRIBER' peuvent accéder à cette page
         return self.request.user.role == 'SUBSCRIBER'
 
     def handle_no_permission(self):
-        # Rediriger vers la page d'accueil avec un message d'erreur au lieu d'un 403
         return redirect('home')
 
     def get_object(self, queryset=None):
-        # Récupérer automatiquement l'utilisateur connecté
         return self.request.user
 
     def get_success_url(self):
         return reverse_lazy('home')
 
 
-class HomePageView(LoginRequiredMixin, TemplateView):
+class HomePageView(LoginRequiredMixin, ListView):
     template_name = 'blog/home.html'
     login_url = '/login/'
     redirect_field_name = 'redirect_to'
+    paginate_by = 4  # Nombre d'éléments par page
+
+    def get_queryset(self):
+        # Récupérer les blogs des contributeurs suivis, blogs mis en avant, ou les blogs auxquels l'utilisateur a contribué
+        blogs = models.Blog.objects.filter(
+            Q(contributors__in=self.request.user.follows.all()) | Q(
+                starred=True) | Q(contributors=self.request.user)
+        ).annotate(type=Value('Blog', output_field=CharField()))
+
+        # Récupérer les photos des utilisateurs suivis ou les photos de l'utilisateur lui-même
+        photos = models.Photo.objects.filter(
+            Q(uploader__in=self.request.user.follows.all()) | Q(
+                uploader=self.request.user)
+        ).exclude(blog__in=blogs).annotate(type=Value('Photo', output_field=CharField()))
+
+        # Combiner les deux querysets dans une liste et trier par date de création
+        combined_list = sorted(
+            chain(blogs, photos),
+            key=attrgetter('created_at'),
+            reverse=True
+        )
+
+        return combined_list
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['photos'] = models.Photo.objects.all()
-        context['blogs'] = models.Blog.objects.all()
+
+        # Récupérer les éléments combinés
+        combined_list = self.get_queryset()
+
+        # Pagination
+        paginator = Paginator(combined_list, self.paginate_by)
+        page = self.request.GET.get('page')
+
+        try:
+            combined_list = paginator.page(page)
+        except PageNotAnInteger:
+            # Si la page n'est pas un entier, retourne la première page
+            combined_list = paginator.page(1)
+        except EmptyPage:
+            # Si la page est hors des limites, retourne la dernière page valide
+            combined_list = paginator.page(paginator.num_pages)
+
+        context['combined_list'] = combined_list
         return context
 
 

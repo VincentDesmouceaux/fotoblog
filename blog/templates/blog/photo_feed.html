@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load blog_extras %}
+{% block content %}
+    <h2>Flux Photo</h2>
+    {% if page_obj %}
+        <div class="grid-container">
+            {% for photo in page_obj %}
+                {% include 'blog/partials/photo_snippet.html' with photo=photo %}
+            {% endfor %}
+        </div>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; première</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">précédente</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">suivante</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">dernière &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
+        <p>Aucune photo disponible pour le moment.</p>
+    {% endif %}
+{% endblock %}

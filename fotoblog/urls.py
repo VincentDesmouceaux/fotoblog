@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
-from blog.views import HomePageView, BlogAndPhotoUploadView, BlogDetailView, BlogUpdateView, BlogDeleteView, CreateMultiplePhotosView, FollowUsersView
+from blog.views import HomePageView, BlogAndPhotoUploadView, BlogDetailView, BlogUpdateView, BlogDeleteView, CreateMultiplePhotosView, FollowUsersView, PhotoFeedView
 from authentication.views import SignupView, UploadProfilePhotoView
 from django.conf import settings
 from django.conf.urls.static import static
@@ -10,6 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', LoginView.as_view(template_name='authentication/login.html',
          redirect_authenticated_user=True), name='login'),
+    path('photo-feed/', PhotoFeedView.as_view(), name='photo_feed'),
     path('', HomePageView.as_view(), name='home'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('password-change/', PasswordChangeView.as_view(

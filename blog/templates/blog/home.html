@@ -1,31 +1,39 @@
 {% extends 'base.html' %}
-
+{% load blog_extras %}
 {% block content %}
     <p class="connected-message">Vous êtes connecté !</p>
     
-    <h2 class="photo-heading">Photos</h2>
-    {% if photos %}
+    <h2>Flux</h2>
+    {% if combined_list %}
         <div class="grid-container">
-            {% for photo in photos %}
-                <div class="post">
-                    <img src="{{ photo.image.url }}" alt="{{ photo.caption }}">
-                    <p>{{ photo.caption }}</p>
-                </div>
+            {% for item in combined_list %}
+                {% if item.type == 'Blog' %}
+                    {% include 'blog/partials/blog_snippet.html' with blog=item %}
+                {% elif item.type == 'Photo' %}
+                    {% include 'blog/partials/photo_snippet.html' with photo=item %}
+                {% endif %}
             {% endfor %}
         </div>
-    {% else %}
-        <p>Aucune photo disponible pour le moment.</p>
-    {% endif %}
 
-    <h2>Blog</h2>
-    <div class="grid-container">
-        {% for blog in blogs %}
-            <div class="post">
-                <a href="{% url 'view_blog' blog.id %}">
-                    <h4>Billet : {{ blog.title }}</h4>
-                    <img src="{{ blog.photo.image.url }}">
-                </a>
-            </div>
-        {% endfor %}
-    </div>
-{% endblock content %}
+        <!-- Section de pagination -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if combined_list.has_previous %}
+                    <a href="?page=1">&laquo; première</a>
+                    <a href="?page={{ combined_list.previous_page_number }}">précédente</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ combined_list.number }} sur {{ combined_list.paginator.num_pages }}.
+                </span>
+
+                {% if combined_list.has_next %}
+                    <a href="?page={{ combined_list.next_page_number }}">suivante</a>
+                    <a href="?page={{ combined_list.paginator.num_pages }}">dernière &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% else %}
+        <p>Aucun élément disponible pour le moment.</p>
+    {% endif %}
+{% endblock %}
